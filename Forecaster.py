@@ -237,22 +237,18 @@ class Forecaster:
 		# pyplot.legend()
 		# pyplot.show()
 
+import sys
 
+kind = sys.argv[1]
+shift = int(sys.argv[2])
 
 data_fn = 'data/data-month-final.csv'
 
-for i in range(1, 50):
-	shift = 50
-	fc = Forecaster(data_fn, shift, 5)
-	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_g__')
-	bum = fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_g__')
+print "start " + str('gasoline' if kind == 'g' else 'distilled') + " using shift: " + str(shift)
 
-
-for i in range(1, 50):
-	shift = 50
-	fc = Forecaster(data_fn, shift, 6)
-	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_d__')
-	bum = fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_d__')
+fc = Forecaster(data_fn, shift, 5 if kind == 'g' else 6)
+fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_' + str(kind) + '__')
+print fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_' + str(kind) + '__')
 
 # data_fn = 'data/data-month-final.csv'
 
