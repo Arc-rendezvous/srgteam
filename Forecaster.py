@@ -218,7 +218,7 @@ class Forecaster:
 		model.compile(loss='mse', optimizer='adam')
 
 		# fit network
-		history = model.fit(self.train_X, self.train_Y, epochs=200, batch_size=4, validation_data=(self.test_X, self.test_Y), verbose=2, shuffle=False)
+		history = model.fit(self.train_X, self.train_Y, epochs=100, batch_size=4, validation_data=(self.test_X, self.test_Y), verbose=2, shuffle=False)
 
 		model_out_filename = model_filename
 
