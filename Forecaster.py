@@ -18,7 +18,7 @@ from sklearn.metrics import accuracy_score
 
 
 class Forecaster:
-	def __init__(self, data_filename, number_shifted_prediction):
+	def __init__(self, data_filename, number_shifted_prediction, index_prediction):
 		# load dataset
 		self.dataset = read_csv(data_filename,
 			sep=",", 
@@ -36,7 +36,7 @@ class Forecaster:
 				"customerpriceindex",
 				"vmt"])
 		self.number_shifted_prediction = number_shifted_prediction
-		self.index_prediction = 6
+		self.index_prediction = index_prediction
 		self.read_and_split_dataset()
 
 	def read_and_split_dataset(self):
@@ -218,7 +218,7 @@ class Forecaster:
 		model.compile(loss='mse', optimizer='adam')
 
 		# fit network
-		history = model.fit(self.train_X, self.train_Y, epochs=1000, batch_size=72, validation_data=(self.test_X, self.test_Y), verbose=2, shuffle=False)
+		history = model.fit(self.train_X, self.train_Y, epochs=200, batch_size=4, validation_data=(self.test_X, self.test_Y), verbose=2, shuffle=False)
 
 		model_out_filename = model_filename
 
@@ -232,16 +232,24 @@ class Forecaster:
 		print("Model " + model_out_filename + " saved to disk")
 
 		# plot history
-		pyplot.plot(history.history['loss'], label='train')
-		pyplot.plot(history.history['val_loss'], label='test')
-		pyplot.legend()
-		pyplot.show()
+		# pyplot.plot(history.history['loss'], label='train')
+		# pyplot.plot(history.history['val_loss'], label='test')
+		# pyplot.legend()
+		# pyplot.show()
 
 
 data_fn = 'data/data-month-final.csv'
-shift = 5
-fc = Forecaster(data_fn, shift)
-fc.train('test_model_lstm_6_1_shift_5_yaz')
-print fc.predict_out('test_model_lstm_6_1_shift_5_yaz')
+
+for i in range(15):
+	shift = i + 1
+	fc = Forecaster(data_fn, shift, 5)
+	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_yay__')
+	print fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_yay__')
+
+for i in range(15):
+	shift = i + 1
+	fc = Forecaster(data_fn, shift, 6)
+	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_yaz__')
+	print fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_yaz__')
 # fc.test('test_model_lstm_6_1_shift_1_yaz', fc.test_X[-10:], fc.test_Y[-10:])
 
