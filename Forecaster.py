@@ -2,6 +2,7 @@ from math import sqrt
 from numpy import concatenate
 import numpy as np
 from matplotlib import pyplot
+import matplotlib.pyplot as plt
 from pandas import read_csv
 from pandas import DataFrame
 from pandas import concat
@@ -30,8 +31,7 @@ class Forecaster:
 				"pricedistilled", 
 				"consgasoline", 
 				"consdistilled", 
-				"gdp",
-				"DPI",
+				"gdp","DPI",
 				"totalsalesvehicle",
 				"customerpriceindex",
 				"vmt"])
@@ -85,7 +85,7 @@ class Forecaster:
 		self.Xforecast = np.array(Xforecast)
 
 		# how many data to split train and test/validation
-		splitter_number = int(0.8 * len(self.Xtrain))
+		splitter_number = int(len(self.Xtrain) - 1)
 
 		# split into input and outputs
 		train_X, self.train_Y = self.Xtrain[:splitter_number, :], self.Ytrain[:splitter_number, :]
@@ -100,13 +100,13 @@ class Forecaster:
 		LOADED MODEL BEGIN
 		'''
 		# load json and create model
-		json_file = open('model/' + model_out_filename + '.json', 'r')
+		json_file = open('smod/' + model_out_filename + '.json', 'r')
 		loaded_model_json = json_file.read()
 		json_file.close()
 		model = model_from_json(loaded_model_json)
 		
 		# load weights into new self.model
-		model.load_weights("model/" + model_out_filename + ".h5")
+		model.load_weights("smod/" + model_out_filename + ".h5")
 		print("Loaded model from disk")
 		model.compile(loss='mae', optimizer='adam')
 		print "Error is ", model.evaluate(self.test_X, self.test_Y) * 100, "%"
@@ -136,13 +136,13 @@ class Forecaster:
 		LOADED MODEL BEGIN
 		'''
 		# load json and create model
-		json_file = open('model/' + model_out_filename + '.json', 'r')
+		json_file = open('smod/' + model_out_filename + '.json', 'r')
 		loaded_model_json = json_file.read()
 		json_file.close()
 		model = model_from_json(loaded_model_json)
 		
 		# load weights into new self.model
-		model.load_weights("model/" + model_out_filename + ".h5")
+		model.load_weights("smod/" + model_out_filename + ".h5")
 		print("Loaded model from disk")
 		model.compile(loss='mae', optimizer='adam')
 		print "Error is ", model.evaluate(self.test_X, self.test_Y) * 100, "%"
@@ -205,12 +205,12 @@ class Forecaster:
 			input_dim=12,
 			output_dim=50,
 			return_sequences=True))
-		model.add(Dropout(0.2))
+		model.add(Dropout(0.1))
 
 		model.add(LSTM(
-			100,
+			35,
 			return_sequences=False))
-		model.add(Dropout(0.2))
+		model.add(Dropout(0.1))
 
 		model.add(Dense(
 			output_dim=1))
@@ -218,17 +218,17 @@ class Forecaster:
 		model.compile(loss='mse', optimizer='adam')
 
 		# fit network
-		history = model.fit(self.train_X, self.train_Y, epochs=100, batch_size=4, validation_data=(self.test_X, self.test_Y), verbose=2, shuffle=False)
+		history = model.fit(self.train_X, self.train_Y, epochs=100, batch_size=4 * 4, validation_data=(self.test_X, self.test_Y), verbose=2, shuffle=False)
 
 		model_out_filename = model_filename
 
 		# serialize self.model to JSON
 		model_json = model.to_json()
-		with open("model/" + model_out_filename + ".json", "w") as json_file:
+		with open("smod/" + model_out_filename + ".json", "w") as json_file:
 			json_file.write(model_json)
 
 		# serialize weights to HDF5
-		model.save_weights("model/" + model_out_filename + ".h5")
+		model.save_weights("smod/" + model_out_filename + ".h5")
 		print("Model " + model_out_filename + " saved to disk")
 
 		# plot history
@@ -238,18 +238,94 @@ class Forecaster:
 		# pyplot.show()
 
 
+
 data_fn = 'data/data-month-final.csv'
 
-for i in range(15):
-	shift = i + 1
+for i in range(1, 50):
+	shift = 50
 	fc = Forecaster(data_fn, shift, 5)
-	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_yay__')
-	print fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_yay__')
+	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_g__')
+	bum = fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_g__')
 
-for i in range(15):
-	shift = i + 1
+
+for i in range(1, 50):
+	shift = 50
 	fc = Forecaster(data_fn, shift, 6)
-	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_yaz__')
-	print fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_yaz__')
-# fc.test('test_model_lstm_6_1_shift_1_yaz', fc.test_X[-10:], fc.test_Y[-10:])
+	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_d__')
+	bum = fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_d__')
+
+# data_fn = 'data/data-month-final.csv'
+
+# # for i in range(15):
+# shift = 50
+# fc = Forecaster(data_fn, shift, 5)
+# fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_yab__')
+# bum = fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_yab__')
+
+# pred_xf = bum
+# pred_as = fc.scaler_Y.inverse_transform([x for x in fc.train_Y])
+
+# # pyplot.plot(pred_xf, label='lstm')
+# # # mix_data = self.test_Y + self.train_Y
+# # pyplot.plot(pred_as, label='asli')
+# # pyplot.legend()
+# # pyplot.show()
+
+# def find_contiguous_colors(colors):
+#     # finds the continuous segments of colors and returns those segments
+#     segs = []
+#     curr_seg = []
+#     prev_color = ''
+#     for c in colors:
+#         if c == prev_color or prev_color == '':
+#             curr_seg.append(c)
+#         else:
+#             segs.append(curr_seg)
+#             curr_seg = []
+#             curr_seg.append(c)
+#         prev_color = c
+#     segs.append(curr_seg) # the final one
+#     return segs
+
+# def plot_multicolored_lines(x,y,colors):
+#     segments = find_contiguous_colors(colors)
+#     plt.figure()
+#     start= 0
+#     for seg in segments:
+#         end = start + len(seg)
+#         l, = plt.gca().plot(x[start:end],y[start:end],lw=2,c=seg[0]) 
+#         start = end
+
+# cas = [x[0] for x in pred_xf]
+# cxf = [x[0] for x in pred_as]
+# cxf = cxf[-150:]
+
+# x = np.arange(len(cxf) + len(cas))
+# y = cxf + cas # randomly generated values
+# # color segments
+# colors = ['blue']*(len(cxf))
+# colors[len(cxf):len(cxf) + len(cas)] = ['red'] * len(cas)
+
+# plot_multicolored_lines(x,y,colors)
+# plt.show()
+
+# # from matplotlib.collections import LineCollection
+
+# # segments = np.hstack([pred_xf, pred_as])
+
+# # fig, ax = plt.subplots()
+# # coll = LineCollection(segments, cmap=plt.cm.gist_ncar)
+# # coll.set_array(np.random.random(xy.shape[0]))
+
+# # ax.add_collection(coll)
+# # ax.autoscale_view()
+
+# # plt.show()
+
+# # for i in range(15):
+# # 	shift = i + 1
+# # 	fc = Forecaster(data_fn, shift, 6)
+# # 	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_yaz__')
+# # 	print fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_yaz__')
+# # # fc.test('test_model_lstm_6_1_shift_1_yaz', fc.test_X[-10:], fc.test_Y[-10:])
 
