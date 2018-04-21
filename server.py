@@ -41,7 +41,10 @@ def predict():
 
 	arr = [x[0] for x in fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_' + str(kind) + '__')]
 	arr = [float(x) for x in arr]
-	return json.dumps(arr)
+
+	resp = Response(json.dumps(arr))
+	resp.headers['Content-Type'] = 'application/json'
+	return resp
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", port=5003)
