@@ -237,91 +237,92 @@ class Forecaster:
 		# pyplot.legend()
 		# pyplot.show()
 
-import sys
+# import sys
 
-kind = sys.argv[1]
-shift = int(sys.argv[2])
-
-data_fn = 'data/data-month-final.csv'
-
-print "start " + str('gasoline' if kind == 'g' else 'distilled') + " using shift: " + str(shift)
-
-fc = Forecaster(data_fn, shift, 5 if kind == 'g' else 6)
-fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_' + str(kind) + '__')
-print fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_' + str(kind) + '__')
+# kind = sys.argv[1]
+# shift = int(sys.argv[2])
 
 # data_fn = 'data/data-month-final.csv'
 
-# # for i in range(15):
-# shift = 50
-# fc = Forecaster(data_fn, shift, 5)
+# print "start " + str('gasoline' if kind == 'g' else 'distilled') + " using shift: " + str(shift)
+
+# fc = Forecaster(data_fn, shift, 5 if kind == 'g' else 6)
+# fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_' + str(kind) + '__')
+# print fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_' + str(kind) + '__')
+
+data_fn = 'data/data-month-final.csv'
+
+# for i in range(15):
+shift = 5
+kind = 'g'
+fc = Forecaster(data_fn, shift, 5 if kind == 'g' else 6)
 # fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_yab__')
-# bum = fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_yab__')
+bum = fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_almost_full_data_' + str(kind) + '__')
 
-# pred_xf = bum
-# pred_as = fc.scaler_Y.inverse_transform([x for x in fc.train_Y])
+pred_xf = bum
+pred_as = fc.scaler_Y.inverse_transform([x for x in fc.train_Y])
 
-# # pyplot.plot(pred_xf, label='lstm')
-# # # mix_data = self.test_Y + self.train_Y
-# # pyplot.plot(pred_as, label='asli')
-# # pyplot.legend()
-# # pyplot.show()
+# pyplot.plot(pred_xf, label='lstm')
+# # mix_data = self.test_Y + self.train_Y
+# pyplot.plot(pred_as, label='asli')
+# pyplot.legend()
+# pyplot.show()
 
-# def find_contiguous_colors(colors):
-#     # finds the continuous segments of colors and returns those segments
-#     segs = []
-#     curr_seg = []
-#     prev_color = ''
-#     for c in colors:
-#         if c == prev_color or prev_color == '':
-#             curr_seg.append(c)
-#         else:
-#             segs.append(curr_seg)
-#             curr_seg = []
-#             curr_seg.append(c)
-#         prev_color = c
-#     segs.append(curr_seg) # the final one
-#     return segs
+def find_contiguous_colors(colors):
+    # finds the continuous segments of colors and returns those segments
+    segs = []
+    curr_seg = []
+    prev_color = ''
+    for c in colors:
+        if c == prev_color or prev_color == '':
+            curr_seg.append(c)
+        else:
+            segs.append(curr_seg)
+            curr_seg = []
+            curr_seg.append(c)
+        prev_color = c
+    segs.append(curr_seg) # the final one
+    return segs
 
-# def plot_multicolored_lines(x,y,colors):
-#     segments = find_contiguous_colors(colors)
-#     plt.figure()
-#     start= 0
-#     for seg in segments:
-#         end = start + len(seg)
-#         l, = plt.gca().plot(x[start:end],y[start:end],lw=2,c=seg[0]) 
-#         start = end
+def plot_multicolored_lines(x,y,colors):
+    segments = find_contiguous_colors(colors)
+    plt.figure()
+    start= 0
+    for seg in segments:
+        end = start + len(seg)
+        l, = plt.gca().plot(x[start:end],y[start:end],lw=2,c=seg[0]) 
+        start = end
 
-# cas = [x[0] for x in pred_xf]
-# cxf = [x[0] for x in pred_as]
-# cxf = cxf[-150:]
+cas = [x[0] for x in pred_xf]
+cxf = [x[0] for x in pred_as]
+cxf = cxf[-50:]
 
-# x = np.arange(len(cxf) + len(cas))
-# y = cxf + cas # randomly generated values
-# # color segments
-# colors = ['blue']*(len(cxf))
-# colors[len(cxf):len(cxf) + len(cas)] = ['red'] * len(cas)
+x = np.arange(len(cxf) + len(cas))
+y = cxf + cas # randomly generated values
+# color segments
+colors = ['blue']*(len(cxf))
+colors[len(cxf):len(cxf) + len(cas)] = ['red'] * len(cas)
 
-# plot_multicolored_lines(x,y,colors)
+plot_multicolored_lines(x,y,colors)
+plt.show()
+
+# from matplotlib.collections import LineCollection
+
+# segments = np.hstack([pred_xf, pred_as])
+
+# fig, ax = plt.subplots()
+# coll = LineCollection(segments, cmap=plt.cm.gist_ncar)
+# coll.set_array(np.random.random(xy.shape[0]))
+
+# ax.add_collection(coll)
+# ax.autoscale_view()
+
 # plt.show()
 
-# # from matplotlib.collections import LineCollection
-
-# # segments = np.hstack([pred_xf, pred_as])
-
-# # fig, ax = plt.subplots()
-# # coll = LineCollection(segments, cmap=plt.cm.gist_ncar)
-# # coll.set_array(np.random.random(xy.shape[0]))
-
-# # ax.add_collection(coll)
-# # ax.autoscale_view()
-
-# # plt.show()
-
-# # for i in range(15):
-# # 	shift = i + 1
-# # 	fc = Forecaster(data_fn, shift, 6)
-# # 	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_yaz__')
-# # 	print fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_yaz__')
-# # # fc.test('test_model_lstm_6_1_shift_1_yaz', fc.test_X[-10:], fc.test_Y[-10:])
+# for i in range(15):
+# 	shift = i + 1
+# 	fc = Forecaster(data_fn, shift, 6)
+# 	fc.train('test_model_lstm_6_1_shift_' + str(shift) + '_yaz__')
+# 	print fc.predict_out('test_model_lstm_6_1_shift_' + str(shift) + '_yaz__')
+# # fc.test('test_model_lstm_6_1_shift_1_yaz', fc.test_X[-10:], fc.test_Y[-10:])
 
