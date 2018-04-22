@@ -38,7 +38,7 @@ def predict():
 		return "predict param error"
 
 	data_fn = 'data/data-month-final.csv'
-	shift = predict
+	shift = 50
 	kind = cons[0]
 	fc = Forecaster(data_fn, shift, 5)
 
@@ -46,25 +46,23 @@ def predict():
 	arr = [float(x) for x in arr]
 	arr2 = [x[0] for x in fc.scaler_Y.inverse_transform(fc.Ytrain)]
 
-	if step == 0:
-		out_pred = arr[-7:]
-	elif step > 0:
-		out_pred = ([0] * step) + arr[step-7:]
-	elif step >= -7:
-		out_pred = ([0] * abs(step)) + arr[-7:][:(7 + step)]
-	else:
-		out_pred = []
+	concat_index = len(arr2)
+	middle_index = concat_index + step
+	cummulative_data = arr2 + arr
 
-	if step == 0:
-		out_current = arr2[-7:]
-	elif step < 0:
-		out_current = arr2[-7:]
-	elif step > 7:
-		out_current = []
-	elif step > 0:
-		out_current = arr2[step - 7:] + (step * [0])
+	start_index = middle_index - 7
+	end_index = middle_index + 7
+
+	out_current = []
+	out_pred = []
+
+	if start_index >= concat_index:
+		out_pred = cummulative_data[start_index:end_index]
+	elif end_index < concat_index:
+		out_current = cummulative_data[-14:]
 	else:
-		out_current = []
+		out_current = cummulative_data[start_index:concat_index]
+		out_pred = cummulative_data[concat_index:end_index]
 
 	now = datetime.datetime.now()
 	# time = 
@@ -77,11 +75,14 @@ def predict():
 	date_out_pred = []
 	date_out_current = []
 
-	for i in range(step + 1, step_b + 1):
+	len_left = len(out_current)
+	len_right = len(out_pred)
+
+	for i in range(step + 1 + len_left, step + 1 + len_left + len_right):
 		date_x = date_now + datetime.timedelta(days=i)
 		date_out_pred.append(date_x.strftime("%Y-%m-%d"))
 
-	for i in range(step_a, step):
+	for i in range(step + 1, step + 1 + len_left):
 		date_x = date_now + datetime.timedelta(days=i)
 		date_out_current.append(date_x.strftime("%Y-%m-%d"))
 	
