@@ -67,9 +67,6 @@ def predict():
 	now = datetime.datetime.now()
 	# time = 
 
-	step_a = step - 7;
-	step_b = step + 7;
-
 	date_now = now
 
 	date_out_pred = []
@@ -79,11 +76,11 @@ def predict():
 	len_right = len(out_pred)
 
 	for i in range(step + 1 + len_left, step + 1 + len_left + len_right):
-		date_x = date_now + datetime.timedelta(days=i)
+		date_x = date_now + datetime.timedelta(days=i - 8)
 		date_out_pred.append(date_x.strftime("%Y-%m-%d"))
 
 	for i in range(step + 1, step + 1 + len_left):
-		date_x = date_now + datetime.timedelta(days=i)
+		date_x = date_now + datetime.timedelta(days=i - 8)
 		date_out_current.append(date_x.strftime("%Y-%m-%d"))
 	
 	# date_out_current = []
